@@ -33,7 +33,7 @@ resource "aws_db_instance" "default" {
   username                    = "doimasteruser"
   manage_master_user_password = true
   skip_final_snapshot         = true
-  backup_retention_period     = 7
+  backup_retention_period     = 14
   maintenance_window          = "Mon:00:00-Mon:03:00"
   backup_window               = "03:00-06:00"
   lifecycle {
