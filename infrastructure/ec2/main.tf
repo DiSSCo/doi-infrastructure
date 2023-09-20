@@ -12,15 +12,24 @@ provider "aws" {
 
 resource "aws_eip" "static_ip" {
   domain   = "vpc"
-  instance = aws_instance.doi_server
+  instance = aws_instance.doi_server.id
+}
+
+data "terraform_remote_state" "vpc-state" {
+  backend = "s3"
+
+  config = {
+    bucket = "doi-terraform-state-backend"
+    key    = "doi/vpc/terraform.tfstate"
+    region = "eu-west-2"
+  }
 }
 
 resource "aws_instance" "doi_server" {
-  source                      = "terraform-aws-modules/ec2-instance/aws"
   ami                         = "ami-0a244485e2e4ffd03"
   instance_type               = "t3.small"
   associate_public_ip_address = true
 
-  subnet_id = data.terraform_remote_state.vpc-state.doi_server_subnets
-  security_groups = [data.terraform_remote_state.vpc-state.doi_server_security_group]
+  subnet_id = data.terraform_remote_state.vpc-state.outputs.doi_server_subnets[0]
+  security_groups = [data.terraform_remote_state.vpc-state.outputs.doi_server_security_group]
 }

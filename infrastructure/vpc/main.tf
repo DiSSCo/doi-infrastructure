@@ -65,14 +65,14 @@ resource "aws_security_group" "doi-server-sg" {
   ingress {
     from_port   = 22
     to_port     = 22
-    protocol    = "ssh"
+    protocol    = "tcp"
     description = "SSH access for Naturalis Eduroam"
     cidr_blocks = ["145.136.247.119/32"]
   }
   ingress {
     from_port   = 22
     to_port     = 22
-    protocol    = "ssh"
+    protocol    = "tcp"
     description = "SSH Access for Naturalis Network"
     cidr_blocks = ["145.136.247.125/32"]
   }
