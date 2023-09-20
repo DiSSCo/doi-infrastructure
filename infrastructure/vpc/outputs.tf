@@ -1,10 +1,5 @@
-output "doi_database_subnet_group" {
-  value       = module.doi-database-vpc.database_subnet_group
-  description = "Subnet of the database"
-}
-
-output "doi_server_subnet_group" {
-  value       = module.doi-server-vpc.private_subnets
+output "doi_server_subnets" {
+  value       = module.doi-vpc.private_subnets
   description = "Private subnet of the DOI Server"
 }
 

@@ -10,11 +10,17 @@ provider "aws" {
   }
 }
 
+resource "aws_eip" "static_ip" {
+  domain   = "vpc"
+  instance = aws_instance.doi_server
+}
+
 resource "aws_instance" "doi_server" {
-  source          = "terraform-aws-modules/ec2-instance/aws"
-  ami             = "ami-0a244485e2e4ffd03"
-  instance_type   = "t3.small"
-  azs             = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
-  security_groups = [aws_security_group.doi-server-sg.id]
-  subnet_id       = doi_server_subnet_group
+  source                      = "terraform-aws-modules/ec2-instance/aws"
+  ami                         = "ami-0a244485e2e4ffd03"
+  instance_type               = "t3.small"
+  associate_public_ip_address = true
+
+  subnet_id = data.terraform_remote_state.vpc-state.doi_server_subnets
+  security_groups = [data.terraform_remote_state.vpc-state.doi_server_security_group]
 }
