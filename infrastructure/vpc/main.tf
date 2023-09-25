@@ -56,6 +56,29 @@ resource "aws_security_group" "doi-database-sg" {
   }
 }
 
+resource "aws_internet_gateway" "doi-gateway" {
+  vpc_id = module.doi-vpc.vpc_id
+  tags = {
+    Name    = "doi-gateway"
+  }
+}
+
+resource "aws_route_table" "doi-routing" {
+  vpc_id = module.doi-vpc.vpc_id
+  route {
+    cidr_block = "10.200.0.0/16"
+    gateway_id = aws_internet_gateway.doi-gateway.id
+  }
+  tags = {
+    Name  = "doi-routing"
+  }
+}
+
+resource "aws_route_table_association" "subnet-association" {
+  vpc_id = module.doi-vpc.vpc_id
+  route_table_id = aws_route_table.doi-routing.id
+}
+
 resource "aws_security_group" "doi-server-sg" {
   name        = "doi-server-sg"
   description = "DOI server security group"
