@@ -4,8 +4,9 @@ provider "aws" {
     tags = {
       Environment = "DOI"
       Owner       = "DiSSCo"
-      Project     = "DiSSCo PID"
+      Project     = "DiSSCo DOI"
       Terraform   = "True"
+      Name        = "DoiServer"
     }
   }
 }
@@ -25,10 +26,16 @@ data "terraform_remote_state" "vpc-state" {
   }
 }
 
+resource "aws_key_pair" "key_pair" {
+  key_name = "ssh_key"
+  public_key = file("~/.ssh/id_rsa.pub")
+}
+
 resource "aws_instance" "doi_server" {
   ami                         = "ami-0a244485e2e4ffd03"
   instance_type               = "t3.small"
   associate_public_ip_address = true
+  key_name = aws_key_pair.key_pair.key_name
 
   subnet_id = data.terraform_remote_state.vpc-state.outputs.doi_server_subnets[0]
   security_groups = [data.terraform_remote_state.vpc-state.outputs.doi_server_security_group]
