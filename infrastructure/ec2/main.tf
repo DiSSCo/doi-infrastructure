@@ -6,7 +6,7 @@ provider "aws" {
       Owner       = "DiSSCo"
       Project     = "DiSSCo DOI"
       Terraform   = "True"
-      Name        = "doi_server"
+      Name        = "doi-server"
     }
   }
 }

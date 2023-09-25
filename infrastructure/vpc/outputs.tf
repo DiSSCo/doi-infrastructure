@@ -4,7 +4,7 @@ output "doi_database_subnets" {
 }
 
 output "doi_server_subnets" {
-  value       = module.doi-vpc.private_subnets
+  value       = module.doi-vpc.public_subnets
   description = "Private subnet of the DOI Server"
 }
 
