@@ -1,10 +1,12 @@
 provider "aws" {
   region = "eu-west-2"
-  tags   = {
-    Environment = "DOI"
-    Owner       = "DiSSCo"
-    Project     = "DiSSCo DOI"
-    Terraform   = "True"
+  default_tags {
+    tags = {
+      Environment = "DOI"
+      Owner       = "DiSSCo"
+      Project     = "DiSSCo DOI"
+      Terraform   = "True"
+    }
   }
 }
 
@@ -12,8 +14,8 @@ data "terraform_remote_state" "vpc-state" {
   backend = "s3"
 
   config = {
-    bucket = "dissco-terraform-state-backend"
-    key    = "acceptance/vpc/terraform.tfstate"
+    bucket = "doi-terraform-state-backend"
+    key    = "doi/vpc/terraform.tfstate"
     region = "eu-west-2"
   }
 }
@@ -26,7 +28,7 @@ resource "aws_db_instance" "default" {
   engine_version         = "15.2"
   instance_class         = "db.m6g.large"
   publicly_accessible    = true
-  db_subnet_group_name   = data.terraform_remote_state.vpc-state.outputs.doi_server_subnets
+  db_subnet_group_name   = data.terraform_remote_state.vpc-state.outputs.doi_database_subnets
   vpc_security_group_ids = [
     data.terraform_remote_state.vpc-state.outputs.doi_database_security_group
   ]
