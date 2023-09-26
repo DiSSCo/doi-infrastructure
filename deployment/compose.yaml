@@ -1,6 +1,6 @@
 services:
-  handle_server:
-    container_name: handle_server
+  doi_server:
+    container_name: doi_server
     image: public.ecr.aws/dissco/handle-server:latest
     network_mode: "host"
     restart: always
@@ -23,3 +23,32 @@ services:
       - type: bind
         source: ${SRC_KEYS}/sitebndl.zip
         target: ${TGT_KEYS}/sitebndl.zip
+  doi_api:
+    container_name: doi_api
+    image: public.ecr.aws/dissco/handle-manager:sha-5f2ef1f # Sep 25, 2023
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      spring.security.oauth2.resourceserver.jwt.issuer-uri: ${JWT_ISSUER}
+      spring.security.oauth2.authorizationserver.endpoint.jwk-set-uri: ${JWK_URI}
+      application.ui-url: ${UI_URL}
+      application.api-url: ${API_URL}
+      application.orchestration-url: ${ORCHESTRATION_URL}
+      application.maxHandles: ${MAX_HANDLES}
+      spring.datasource.url: ${DB_URL}
+      spring.datasource.username : ${DB_USR}
+      spring.datasource.password : ${DB_PWD}
+      springdoc.swagger-ui.operationsSorter : ${SWAGGER_SORT}
+      application.prefix: ${PREFIX}
+  proxy:
+    image: nginx:1.25.2
+    container_name: nginx
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/conf:/etc/nginx/conf.d:ro
+      - ./certbot/www:/var/www/certbot/:ro
+      - ./certbot/conf:/etc/nginx/ssl/:ro
