@@ -54,6 +54,13 @@ resource "aws_security_group" "doi-database-sg" {
     description = "PostgreSQL access for Naturalis Network"
     cidr_blocks = ["145.136.247.125/32"]
   }
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    description = "PostgreSQL access from within VPC"
+    cidr_blocks = [module.doi-vpc.vpc_cidr_block]
+  }
 }
 
 resource "aws_security_group" "doi-server-sg" {
