@@ -6,7 +6,7 @@ provider "aws" {
       Owner       = "DiSSCo"
       Project     = "DiSSCo DOI"
       Terraform   = "True"
-      Name        = "DoiServer"
+      Name        = "doi-server"
     }
   }
 }
@@ -27,7 +27,7 @@ data "terraform_remote_state" "vpc-state" {
 }
 
 resource "aws_key_pair" "key_pair" {
-  key_name = "ssh_key"
+  key_name = "doi_key"
   public_key = file("~/.ssh/id_rsa.pub")
 }
 
