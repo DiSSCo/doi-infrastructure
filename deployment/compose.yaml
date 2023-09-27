@@ -1,6 +1,6 @@
 services:
   doi_server:
-    container_name: doi_server
+    container_name: doi-server
     image: public.ecr.aws/dissco/handle-server:latest
     network_mode: "host"
     restart: always
@@ -40,7 +40,7 @@ services:
       springdoc.swagger-ui.operationsSorter: ${SWAGGER_SORT}
       application.prefix: ${PREFIX}
       server.port: 8081
-  nginx-proxy:
+  nginx_proxy:
     image: nginx:1.25.2
     container_name: nginx
     restart: always
