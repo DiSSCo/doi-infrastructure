@@ -42,7 +42,7 @@ services:
       server.port: 8081
   nginx_proxy:
     image: nginx:1.25.2
-    container_name: nginx
+    container_name: nginx-proxy
     restart: always
     depends_on:
       - doi_api
