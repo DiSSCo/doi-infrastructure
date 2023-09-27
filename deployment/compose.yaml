@@ -24,11 +24,9 @@ services:
         source: ${SRC_KEYS}/sitebndl.zip
         target: ${TGT_KEYS}/sitebndl.zip
   doi_api:
-    container_name: doi_api
+    container_name: doi-api
     image: public.ecr.aws/dissco/handle-manager:sha-5f2ef1f # Sep 25, 2023
     restart: always
-    ports:
-      - 8081:8081
     environment:
       spring.security.oauth2.resourceserver.jwt.issuer-uri: ${JWT_ISSUER}
       spring.security.oauth2.authorizationserver.endpoint.jwk-set-uri: ${JWK_URI}
@@ -37,18 +35,29 @@ services:
       application.orchestration-url: ${ORCHESTRATION_URL}
       application.maxHandles: ${MAX_HANDLES}
       spring.datasource.url: ${DB_URL}
-      spring.datasource.username : ${DB_USR}
-      spring.datasource.password : ${DB_PWD}
-      springdoc.swagger-ui.operationsSorter : ${SWAGGER_SORT}
+      spring.datasource.username: ${DB_USR}
+      spring.datasource.password: ${DB_PWD}
+      springdoc.swagger-ui.operationsSorter: ${SWAGGER_SORT}
       application.prefix: ${PREFIX}
-  proxy:
+      server.port: 8081
+  nginx-proxy:
     image: nginx:1.25.2
     container_name: nginx
     restart: always
+    depends_on:
+      - doi_api
     ports:
       - 80:80
       - 443:443
     volumes:
-      - ./nginx/conf:/etc/nginx/conf.d:ro
-      - ./certbot/www:/var/www/certbot/:ro
-      - ./certbot/conf:/etc/nginx/ssl/:ro
+      - ./data/nginx/:/etc/nginx/conf.d/:ro
+      - ./data/certbot/conf/:/etc/nginx/ssl/:ro
+      - ./data/certbot/www:/var/www/certbot/:ro
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+  certbot:
+    container_name: certbot
+    image: certbot/certbot:latest
+    volumes:
+      - ./data/certbot/conf/:/etc/letsencrypt/:rw
+      - ./data/certbot/www/:/var/www/certbot/:rw
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
