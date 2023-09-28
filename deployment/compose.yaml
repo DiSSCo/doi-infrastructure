@@ -1,7 +1,7 @@
 services:
   doi_server:
     container_name: doi-server
-    image: public.ecr.aws/dissco/handle-server:latest
+    image: doi_server:latest
     network_mode: "host"
     restart: always
     volumes:
@@ -15,14 +15,12 @@ services:
         source: ${SRC_KEYS}/config.dct
         target: ${TGT_KEYS}/config.dct
       - type: bind
-        source: ${SRC_KEYS}/serverCertificate.pem
-        target: ${TGT_KEYS}/serverCertificate.pem
-      - type: bind
         source: ${SRC_KEYS}/siteinfo.json
         target: ${TGT_KEYS}/siteinfo.json
       - type: bind
         source: ${SRC_KEYS}/sitebndl.zip
         target: ${TGT_KEYS}/sitebndl.zip
+
   doi_api:
     container_name: doi-api
     image: public.ecr.aws/dissco/handle-manager:sha-5f2ef1f # Sep 25, 2023
@@ -40,6 +38,7 @@ services:
       springdoc.swagger-ui.operationsSorter: ${SWAGGER_SORT}
       application.prefix: ${PREFIX}
       server.port: 8081
+
   nginx_proxy:
     image: nginx:1.25.2
     container_name: nginx-proxy
@@ -54,6 +53,7 @@ services:
       - ./data/certbot/conf/:/etc/nginx/ssl/:ro
       - ./data/certbot/www:/var/www/certbot/:ro
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
   certbot:
     container_name: certbot
     image: certbot/certbot:latest
