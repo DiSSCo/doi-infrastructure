@@ -15,6 +15,9 @@ services:
         source: ${SRC_KEYS}/config.dct
         target: ${TGT_KEYS}/config.dct
       - type: bind
+        source: ${SRC_KEYS}/serverCertificate.pem
+        target: ${TGT_KEYS}/serverCertificate.pem
+      - type: bind
         source: ${SRC_KEYS}/siteinfo.json
         target: ${TGT_KEYS}/siteinfo.json
       - type: bind
@@ -23,7 +26,7 @@ services:
 
   doi_api:
     container_name: doi-api
-    image: public.ecr.aws/dissco/handle-manager:sha-5f2ef1f # Sep 25, 2023
+    image: public.ecr.aws/dissco/handle-manager:sha-4e6785c #Oct 2, 2023
     restart: always
     environment:
       spring.security.oauth2.resourceserver.jwt.issuer-uri: ${JWT_ISSUER}
@@ -33,15 +36,16 @@ services:
       application.orchestration-url: ${ORCHESTRATION_URL}
       application.maxHandles: ${MAX_HANDLES}
       spring.datasource.url: ${DB_URL}
+      spring.profiles.active: doi
       spring.datasource.username: ${DB_USR}
       spring.datasource.password: ${DB_PWD}
       springdoc.swagger-ui.operationsSorter: ${SWAGGER_SORT}
       application.prefix: ${PREFIX}
       server.port: 8081
 
-  nginx_proxy:
+  nginx-proxy:
     image: nginx:1.25.2
-    container_name: nginx-proxy
+    container_name: nginx
     restart: always
     depends_on:
       - doi_api
