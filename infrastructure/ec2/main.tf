@@ -28,7 +28,7 @@ data "terraform_remote_state" "vpc-state" {
 
 resource "aws_key_pair" "key_pair" {
   key_name = "doi_key"
-  public_key = file("~/.ssh/id_rsa.pub")
+  public_key = file("./doi_server.pub")
 }
 
 resource "aws_instance" "doi_server" {
@@ -38,5 +38,5 @@ resource "aws_instance" "doi_server" {
   key_name = aws_key_pair.key_pair.key_name
 
   subnet_id = data.terraform_remote_state.vpc-state.outputs.doi_server_subnets[0]
-  security_groups = [data.terraform_remote_state.vpc-state.outputs.doi_server_security_group]
+  vpc_security_group_ids = [data.terraform_remote_state.vpc-state.outputs.doi_server_security_group]
 }
